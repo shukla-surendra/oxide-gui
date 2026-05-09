@@ -6,7 +6,7 @@
 //! the framebuffer directly — every call goes through `Backend::fill_rect`.
 
 use crate::backend::Backend;
-use crate::color::{Color, palette};
+use crate::color::{Color, lerp_color, palette};
 use crate::event::Event;
 use crate::font;
 
@@ -128,6 +128,68 @@ impl<'b, B: Backend> Canvas<'b, B> {
         self.fill_rect(x + 1, y,         w - 2, h,     color); // main body
         self.fill_rect(x,     y + 1,     1,     h - 2, color); // left strip
         self.fill_rect(x + w - 1, y + 1, 1,     h - 2, color); // right strip
+    }
+
+    /// Fill a horizontal gradient from `left` to `right` color across `w` pixels.
+    pub fn gradient_h(&mut self, x: u32, y: u32, w: u32, h: u32, left: Color, right: Color) {
+        if w == 0 { return; }
+        let steps = (w - 1).max(1);
+        for i in 0..w {
+            let c = lerp_color(left, right, i, steps);
+            self.fill_rect(x + i, y, 1, h, c);
+        }
+    }
+
+    /// Fill a vertical gradient from `top` to `bottom` color across `h` pixels.
+    pub fn gradient_v(&mut self, x: u32, y: u32, w: u32, h: u32, top: Color, bottom: Color) {
+        if h == 0 { return; }
+        let steps = (h - 1).max(1);
+        for i in 0..h {
+            let c = lerp_color(top, bottom, i, steps);
+            self.fill_rect(x, y + i, w, 1, c);
+        }
+    }
+
+    /// Panel with a 4-pixel dark drop shadow behind it.
+    pub fn shadow_panel(&mut self, x: u32, y: u32, w: u32, h: u32, fill: Color, border: Color) {
+        self.fill_rect(x + 4, y + 4, w, h, palette::BLACK);
+        self.panel(x, y, w, h, fill, border);
+    }
+
+    /// 3-pixel vertical accent bar — used for selection indicators.
+    pub fn accent_bar(&mut self, x: u32, y: u32, h: u32, color: Color) {
+        self.fill_rect(x, y, 3, h, color);
+    }
+
+    /// Tiny 4×4 filled status dot.
+    pub fn dot(&mut self, x: u32, y: u32, color: Color) {
+        self.fill_rect(x, y, 4, 4, color);
+    }
+
+    /// Colored app icon tile: rounded background + centered label.
+    pub fn icon_tile(&mut self, x: u32, y: u32, size: u32, bg: Color, label: &str) {
+        self.fill_rounded(x, y, size, size, bg);
+        self.centered_text(x, y + size.saturating_sub(font::CHAR_H) / 2, size, label, palette::WHITE);
+    }
+
+    /// Progress bar with a two-stop horizontal gradient fill.
+    pub fn gradient_progress(
+        &mut self,
+        x: u32, y: u32, w: u32, h: u32,
+        percent: u32,
+        track: Color, fill_l: Color, fill_r: Color, border: Color,
+    ) {
+        let pct    = percent.min(100);
+        let fill_w = w * pct / 100;
+        self.fill_rect(x, y, w, h, track);
+        if fill_w > 0 {
+            let steps = fill_w.saturating_sub(1).max(1);
+            for i in 0..fill_w {
+                let c = lerp_color(fill_l, fill_r, i, steps);
+                self.fill_rect(x + i, y, 1, h, c);
+            }
+        }
+        self.draw_rect(x, y, w, h, border);
     }
 
     /// Access the underlying backend directly for operations not in Canvas.
