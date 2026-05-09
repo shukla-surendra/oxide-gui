@@ -1,0 +1,18 @@
+[package]
+name    = "oxide-gui-linux"
+version = "0.1.0"
+edition = "2021"
+description = "Linux minifb backend for oxide-gui"
+license = "MIT"
+
+[[example]]
+name = "hello_window"
+path = "examples/hello_window.rs"
+
+[[example]]
+name = "widgets_demo"
+path = "examples/widgets_demo.rs"
+
+[dependencies]
+oxide-gui-core = { path = "../oxide-gui-core" }
+minifb         = "0.27"

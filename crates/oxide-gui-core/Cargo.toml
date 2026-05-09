@@ -1,0 +1,15 @@
+[package]
+name    = "oxide-gui-core"
+version = "0.1.0"
+edition = "2021"
+description = "no_std GUI core: Backend trait, Canvas, events, embedded font"
+license = "MIT"
+
+[features]
+default = []
+
+# Enable alloc for environments that have a heap but no std (e.g. OxideOS kernel)
+alloc = []
+
+[dependencies]
+# deliberately empty — zero external deps, compiles anywhere
