@@ -1,14 +1,19 @@
 [package]
-name    = "oxide-gui-core"
-version = "0.1.0"
-edition = "2021"
-description = "no_std GUI core: Backend trait, Canvas, events, embedded font"
-license = "MIT"
+name        = "oxide-gui-core"
+version.workspace   = true
+edition.workspace   = true
+authors.workspace   = true
+license.workspace   = true
+repository.workspace = true
+homepage.workspace  = true
+description = "Portable no_std GUI framework: Backend trait, Canvas, GNOME-style widgets, embedded 8x16 bitmap font. Zero dependencies; runs in OS kernels, embedded systems, and bare metal."
+keywords    = ["no-std", "gui", "embedded", "framebuffer", "kernel"]
+categories  = ["no-std", "embedded", "rendering::graphics-api"]
+readme      = "../../README.md"
 
 [features]
 default = []
-
-# Enable alloc for environments that have a heap but no std (e.g. OxideOS kernel)
+# Enable alloc for environments that have a heap but no std (e.g. OxideOS kernel).
 alloc = []
 
 [dependencies]

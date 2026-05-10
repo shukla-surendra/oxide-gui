@@ -1,9 +1,15 @@
 [package]
-name    = "oxide-gui-linux"
-version = "0.1.0"
-edition = "2021"
-description = "Linux minifb backend for oxide-gui"
-license = "MIT"
+name        = "oxide-gui-linux"
+version.workspace   = true
+edition.workspace   = true
+authors.workspace   = true
+license.workspace   = true
+repository.workspace = true
+homepage.workspace  = true
+description = "Linux minifb backend for oxide-gui: opens an X11/Wayland window for developing and testing oxide-gui applications on desktop before deploying to OxideOS or bare metal."
+keywords    = ["gui", "linux", "minifb", "desktop", "window"]
+categories  = ["rendering::graphics-api", "gui"]
+readme      = "../../README.md"
 
 [[example]]
 name = "hello_window"
@@ -14,5 +20,7 @@ name = "widgets_demo"
 path = "examples/widgets_demo.rs"
 
 [dependencies]
-oxide-gui-core = { path = "../oxide-gui-core" }
+# path is used for local workspace builds;
+# version is what crates.io resolves after oxide-gui-core is published.
+oxide-gui-core = { path = "../oxide-gui-core", version = "0.1.0" }
 minifb         = "0.27"
