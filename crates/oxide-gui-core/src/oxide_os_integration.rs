@@ -11,8 +11,11 @@
 //! 1. Add to `OxideOS/kernel/Cargo.toml`:
 //! ```toml
 //! [dependencies]
-//! oxide-gui-core = { path = "../../oxide-gui/crates/oxide-gui-core" }
+//! oxide-gui-core = { git = "https://github.com/shukla-surendra/oxide-gui", branch = "master" }
 //! ```
+//!
+//! Cargo will clone the repo automatically on the next `cargo build`.
+//! No local checkout of oxide-gui needed.
 //!
 //! 2. `OxideOS/kernel/src/gui/mod.rs` already declares:
 //! ```

@@ -45,7 +45,18 @@ Add the Linux backend to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-oxide-gui-linux = { path = "crates/oxide-gui-linux" }
+# From GitHub (recommended)
+oxide-gui-linux = { git = "https://github.com/shukla-surendra/oxide-gui", branch = "master" }
+
+# Or from a local checkout
+# oxide-gui-linux = { path = "crates/oxide-gui-linux" }
+```
+
+For OxideOS kernel integration (no_std, no Linux backend needed):
+
+```toml
+[dependencies]
+oxide-gui-core = { git = "https://github.com/shukla-surendra/oxide-gui", branch = "master" }
 ```
 
 Minimal window loop:
