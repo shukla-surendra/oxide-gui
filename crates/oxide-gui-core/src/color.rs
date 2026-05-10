@@ -78,6 +78,7 @@ pub mod palette {
     pub const INDIGO:         u32 = rgb(0x3D, 0x5A, 0xFE);
     pub const NEON_CYAN:      u32 = rgb(0x00, 0xFF, 0xE5);
     pub const ELECTRIC_BLUE:  u32 = rgb(0x00, 0xB4, 0xFF);
+    pub const GNOME_BLUE:     u32 = rgb(0x35, 0x84, 0xE4);
 
     // ── Deep-space surfaces ──
     pub const SURFACE:        u32 = rgb(0x0D, 0x0D, 0x16);

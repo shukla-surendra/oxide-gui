@@ -1,49 +1,73 @@
-//! This module is NOT compiled as part of oxide-gui-core itself.
-//! It is a reference showing how the OxideOS kernel implements the
-//! Backend trait against its framebuffer.
+//! Reference notes for the OxideOS kernel integration.
 //!
-//! Copy this into your OxideOS kernel and add oxide-gui-core as a
-//! dependency:
+//! The real backend implementation lives in the OxideOS repository at:
+//!   `OxideOS/kernel/src/gui/oxide_backend.rs`
 //!
+//! That file compiles against the OxideOS kernel's own types (Graphics,
+//! mouse, keyboard) and is NOT compiled into oxide-gui-core itself.
+//!
+//! # Quick-start
+//!
+//! 1. Add to `OxideOS/kernel/Cargo.toml`:
 //! ```toml
-//! # kernel/Cargo.toml
 //! [dependencies]
-//! oxide-gui-core = { git = "https://github.com/your-user/oxide-gui" }
+//! oxide-gui-core = { path = "../../oxide-gui/crates/oxide-gui-core" }
 //! ```
 //!
-//! Then write a thin wrapper:
+//! 2. `OxideOS/kernel/src/gui/mod.rs` already declares:
+//! ```
+//! pub mod oxide_backend;
+//! ```
 //!
+//! 3. Wire up in your GUI loop after `Graphics` is initialised:
 //! ```rust,ignore
-//! use oxide_gui_core::{Backend, Color, Event};
+//! use crate::gui::oxide_backend::OxideBackend;
+//! use oxide_gui_core::{Canvas, color::palette};
 //!
-//! pub struct OxideBackend<'a> {
-//!     graphics: &'a crate::gui::graphics::Graphics,
-//!     font: &'a crate::gui::fonts::BitmapFont,
-//! }
+//! let mut backend = OxideBackend::new(&graphics);
+//! backend.register_callbacks();   // wires keyboard + mouse → event queue
 //!
-//! impl<'a> Backend for OxideBackend<'a> {
-//!     fn width(&self)  -> u32 { self.graphics.width()  }
-//!     fn height(&self) -> u32 { self.graphics.height() }
+//! loop {
+//!     let mut c = Canvas::new(&mut backend);
 //!
-//!     fn fill_rect(&mut self, x: u32, y: u32, w: u32, h: u32, color: Color) {
-//!         self.graphics.fill_rect(x, y, w, h, color);
-//!     }
+//!     // Full GNOME-style widget vocabulary available:
+//!     c.gnome_headerbar(0, 0, width, "OxideOS", false, palette::SURFACE2);
+//!     c.action_row_toggle(0, 48, 480,
+//!         "Night Mode", "Dark colour scheme",
+//!         true, palette::GNOME_BLUE, false, true);
+//!     c.spinner(640, 400, frame, palette::GNOME_BLUE);
+//!     c.present();
 //!
-//!     fn present(&mut self) {
-//!         self.graphics.present();
-//!     }
-//!
-//!     fn poll_event(&mut self) -> Option<Event> {
-//!         // translate OxideOS keyboard/mouse events into oxide_gui_core::Event
-//!         use crate::gui::mouse;
-//!         use crate::kernel::keyboard;
-//!         if let Some(ch) = keyboard::dequeue_char() {
-//!             return Some(Event::KeyDown(oxide_gui_core::Key::Char(ch as char)));
+//!     while let Some(ev) = backend.poll_event() {
+//!         match ev {
+//!             Event::KeyDown(Key::Escape) => break,
+//!             Event::MouseButton { x, y, pressed: true, .. } => { /* hit test */ }
+//!             _ => {}
 //!         }
-//!         if let Some((x, y)) = mouse::get_position() {
-//!             return Some(Event::MouseMove { x: x as i32, y: y as i32 });
-//!         }
-//!         None
 //!     }
 //! }
 //! ```
+//!
+//! # What the bridge provides
+//!
+//! | OxideOS primitive | oxide-gui surface |
+//! |---|---|
+//! | `Graphics::fill_rect(u64,u64,u64,u64,u32)` | `Backend::fill_rect(u32,u32,u32,u32,Color)` |
+//! | `Graphics::present()` | `Backend::present()` |
+//! | `Graphics::get_dimensions()` | `Backend::width()` / `height()` |
+//! | `keyboard::register_gui_key_callback` | key byte → `Event::KeyDown(Key::Char)` etc. |
+//! | `keyboard::register_arrow_key_callback` | arrow enum → `Event::KeyDown(Key::Up)` etc. |
+//! | `mouse::get_mouse_position()` | delta → `Event::MouseMove` |
+//! | `mouse::is_mouse_button_pressed()` | change → `Event::MouseButton` |
+//!
+//! # What stays in OxideOS
+//!
+//! oxide-gui-core is a *widget layer*, not a full replacement for the kernel
+//! GUI stack.  These OxideOS systems are unchanged:
+//!
+//! - `gui/graphics.rs` — framebuffer, back-buffer, background wallpapers, alpha blending
+//! - `gui/window_manager.rs` — Z-order, drag, resize, minimize, maximize
+//! - `gui/mouse.rs` — PS/2 cursor tracking and rendering
+//! - `gui/fonts.rs` — 8×8 kernel font (oxide-gui-core brings its own 8×16 font)
+//! - All kernel apps (terminal, notepad, launcher, start_menu, …)
+//! - `kernel/gui/compositor.rs` — IPC-based draw command channel
