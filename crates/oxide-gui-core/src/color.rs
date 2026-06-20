@@ -94,4 +94,42 @@ pub mod palette {
     pub const TEXT:           u32 = rgb(0xD4, 0xD4, 0xD4);
     pub const TEXT_DIM:       u32 = rgb(0x85, 0x85, 0x85);
     pub const DIVIDER:        u32 = rgb(0x3F, 0x3F, 0x46);
+
+    /// GNOME / Adwaita dark theme.
+    ///
+    /// Canonical colors for a GNOME-style desktop: flat dark headerbars,
+    /// a near-black top panel, the Adwaita blue accent (#3584e4), and
+    /// uniform translucent-style window-control buttons. Consumers (e.g. an
+    /// OS compositor) should source window-chrome and panel colors from here
+    /// so the whole desktop stays cohesive.
+    pub mod adwaita {
+        use super::rgb;
+
+        // Surfaces
+        pub const WINDOW_BG:           u32 = rgb(0x24, 0x24, 0x24); // window content background
+        pub const HEADERBAR:           u32 = rgb(0x30, 0x30, 0x30); // focused titlebar
+        pub const HEADERBAR_UNFOCUSED: u32 = rgb(0x28, 0x28, 0x28); // unfocused recedes toward window bg
+        pub const HEADERBAR_BORDER:    u32 = rgb(0x1B, 0x1B, 0x1B); // 1px line under the headerbar
+        pub const WINDOW_BORDER:       u32 = rgb(0x14, 0x14, 0x14); // dark 1px outline around the window
+        pub const WINDOW_BORDER_FOCUSED: u32 = rgb(0x44, 0x44, 0x44); // slightly lifted when focused
+
+        // Text
+        pub const TITLE:           u32 = rgb(0xFF, 0xFF, 0xFF); // focused title
+        pub const TITLE_UNFOCUSED: u32 = rgb(0x90, 0x90, 0x90); // dimmed when unfocused
+
+        // Accent
+        pub const ACCENT:          u32 = rgb(0x35, 0x84, 0xE4); // Adwaita blue
+
+        // Window-control buttons (uniform circular, GNOME style)
+        pub const BTN_BG:            u32 = rgb(0x3A, 0x3A, 0x3A); // button disc on a focused headerbar
+        pub const BTN_BG_UNFOCUSED:  u32 = rgb(0x32, 0x32, 0x32);
+        pub const BTN_GLYPH:         u32 = rgb(0xDC, 0xDC, 0xDC); // –, ▢ glyphs
+        pub const CLOSE_GLYPH:       u32 = rgb(0xF2, 0xF2, 0xF2); // × glyph (slightly brighter)
+
+        // Top panel (GNOME Shell top bar — essentially black)
+        pub const PANEL_BG:        u32 = rgb(0x1B, 0x1B, 0x1B);
+        pub const PANEL_TEXT:      u32 = rgb(0xFF, 0xFF, 0xFF);
+        pub const PANEL_TEXT_DIM:  u32 = rgb(0x9A, 0x9A, 0x9A);
+        pub const PANEL_BORDER:    u32 = rgb(0x00, 0x00, 0x00);
+    }
 }
